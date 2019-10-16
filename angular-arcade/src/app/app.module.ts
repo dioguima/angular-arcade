@@ -3,10 +3,12 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ArcadeTennisComponent } from './arcade-tennis/arcade-tennis.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ArcadeTennisComponent
   ],
   imports: [
     BrowserModule,
