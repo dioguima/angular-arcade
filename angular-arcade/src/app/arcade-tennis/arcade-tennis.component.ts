@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Bar } from './objects/bar';
+// import { AiController } from './controllers/ai-controller';
+import { IBaseController } from './controllers/base-controller';
+import { KeyboardController } from './controllers/keyboard-controller';
+import { PlayerController } from './controllers/player-controller';
+import { Bar, IGameObject } from './objects/bar';
 
 @Component({
   selector: 'app-arcade-tennis',
@@ -11,14 +15,25 @@ export class ArcadeTennisComponent implements OnInit {
   private mainCanvas: HTMLCanvasElement;
   private canvasContext: CanvasRenderingContext2D;
   private lastLoopTime: Date;
-  private bar: Bar;
+
+  private gameControllers: IBaseController[];
 
   constructor() { }
 
   ngOnInit() {
     this.mainCanvas = document.getElementById('mainCanvas') as HTMLCanvasElement;
     this.canvasContext = this.mainCanvas.getContext('2d');
-    this.bar = new Bar(this.canvasContext, { x: 20, y: 20 }, 15, 60, 0, this.mainCanvas.height);
+    const barP1 = new Bar(this.canvasContext, { x: 20, y: 20 }, 15, 60, 0, this.mainCanvas.height);
+    // const barP2 = new Bar(this.canvasContext, { x: 1165, y: 20 }, 15, 60, 0, this.mainCanvas.height);
+
+    const keyboardController = new KeyboardController();
+
+    const playerOneController = new PlayerController(barP1, keyboardController);
+
+    this.gameControllers = [
+      playerOneController,
+      // barP2
+    ];
 
     setInterval(() => this.update(), 10);
   }
@@ -27,7 +42,9 @@ export class ArcadeTennisComponent implements OnInit {
     const deltaTime = this.getDeltaTime();
     this.clearCanvas();
 
-    this.bar.update(deltaTime);
+    for (const object of this.gameControllers) {
+      object.update(deltaTime);
+    }
   }
 
   private clearCanvas(): void {

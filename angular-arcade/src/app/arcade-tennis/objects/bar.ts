@@ -1,3 +1,5 @@
+import { IBaseController } from '../controllers/base-controller';
+
 export interface IGameObject {
     update(deltaTime: number): void;
     destroy(): void;
@@ -8,7 +10,8 @@ export class Position {
     public y: number;
 }
 
-export enum Direction {
+export enum EDirection {
+    None,
     Up,
     Down,
     Left,
@@ -24,8 +27,7 @@ export class Bar implements IGameObject {
     private height: number;
     private minHeight: number;
     private maxHeight: number;
-    private velocity: number;
-    private direction: Direction;
+    public velocity: number;
     context: CanvasRenderingContext2D;
 
     //#endregion [ Fields ]
@@ -46,7 +48,6 @@ export class Bar implements IGameObject {
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
 
-        this.direction = Direction.Down;
         this.velocity = 10;
     }
 
@@ -55,7 +56,7 @@ export class Bar implements IGameObject {
     //#region [ Methods ]
 
     public update(deltaTime: number): void {
-        this.move(deltaTime);
+        // this.move(deltaTime);
         this.draw();
     }
 
@@ -63,23 +64,23 @@ export class Bar implements IGameObject {
         throw new Error('Method not implemented.');
     }
 
-    private move(deltaTime: number) {
+    public move(direction: EDirection, deltaTime: number) {
+
+        if (direction === EDirection.None) { return; }
 
         const loopVelocity = this.velocity * deltaTime;
 
-        if (this.direction === Direction.Down) {
+        if (direction === EDirection.Down && this.position.y + this.height < this.maxHeight) {
             this.position.y += loopVelocity;
-        } else if (this.direction === Direction.Up) {
+        } else if (direction === EDirection.Up && this.position.y > this.minHeight) {
             this.position.y -= loopVelocity;
-        } else {
-            throw new Error('Unexpected direction bar');
         }
 
-        if (this.position.y + this.height > this.maxHeight && this.direction === Direction.Down) {
-            this.direction = Direction.Up;
-        } else if (this.position.y < this.minHeight && this.direction === Direction.Up) {
-            this.direction = Direction.Down;
-        }
+        // if (this.position.y + this.height > this.maxHeight && this.direction === EDirection.Down) {
+        //     this.direction = EDirection.Up;
+        // } else if (this.position.y < this.minHeight && this.direction === EDirection.Up) {
+        //     this.direction = EDirection.Down;
+        // }
     }
 
     private draw() {
